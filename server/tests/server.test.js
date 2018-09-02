@@ -1,13 +1,16 @@
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectId} = require('mongodb');
 
 const {app} = require('./../server'); 
 const {Todo} = require('./../models/todo');
 const {user} = require('./../models/user');
 
 const todos =[{
+	_id: new ObjectId(),
 	text: 'First Test to Do'
 },{
+	_id: new ObjectId(),
 	text: 'Second Test to Do'
 }];
 
@@ -70,5 +73,45 @@ describe('GET /todos', () => {
 				expect(res.body.todos[1].text).toBe(todos[1].text);
 			})
 			.end(done);
+	})
+});
+
+describe('GET /todos/:id', () => {
+
+	it('Should get a single todo by id', (done) => {
+
+		var id = todos[0]._id.toHexString();
+		var link = `/todos/${id}`;
+		request(app)
+			.get(link)
+			.expect(200)
+			.expect((res) => {
+				console.log(res.body);
+				// console.log('id: ', id);
+				// console.log(link);
+				expect(typeof res.body.todo.text).toBe('string');
+				expect(res.body.todo.text).toBe('First Test to Do');
+			})
+			.end(done)
+	});
+
+	it('Should return 404 if invalid id is provided', (done) => {
+
+		var id = '123abc'; // invalid id
+		var link = `/todos/${id}`;
+		request(app)
+			.get(link)
+			.expect(404)
+			.end(done)
+	});
+
+	it('Should return 404 if id is not found in the database', (done) => {
+
+		var id = new ObjectId().toHexString();
+		var link = `/todos/${id}`;
+		request(app)
+			.get(link)
+			.expect(404)
+			.end(done)
 	})
 })
