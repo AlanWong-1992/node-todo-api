@@ -144,7 +144,7 @@ describe('DELETE /todos/:id', () => {
 		var id = '123abc'; // invalid id
 		var link = `/todos/${id}`;
 		request(app)
-			.get(link)
+			.delete(link)
 			.expect(404)
 			.end(done)
 	});
@@ -154,7 +154,7 @@ describe('DELETE /todos/:id', () => {
 		var id = new ObjectId().toHexString();
 		var link = `/todos/${id}`;
 		request(app)
-			.get(link)
+			.delete(link)
 			.expect(404)
 			.end(done)
 	})
