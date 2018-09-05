@@ -1,5 +1,6 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
 
 var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
@@ -46,6 +47,7 @@ app.get('/todos/:id', (req, res) => {
 
 		return res.status(200).send({todo})
 
+
 	}).catch((err) => {
 		return res.status(400).send();
 	})
@@ -70,6 +72,50 @@ app.delete('/todos/:id', (req, res) => {
 		return res.status(400).send();
 	})
 
+})
+
+app.patch('/todos/:id', (req, res) => {
+	var id = req.params.id;
+	var body = _.pick(req.body, ['text', 'completed']);
+
+	if (!ObjectId.isValid(id)) {
+		return res.status(404).send();
+	}
+
+	if (_.isNil(body.text)) {
+		return res.status(404).send();
+	}
+
+	if (_.isBoolean(body.completed) && body.completed) {
+		var timestamp = _.now();
+		var date = new Date(timestamp).toString();
+		body.completedAt = date;
+		// var year = date.getFullYear();
+		// var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+		// var month = months[date.getMonth()];
+		// var dayOfMonth = date.getDate();
+		// var hour = date.getHours();
+		// var min = date.getMinutes();
+		// var sec = date.getSeconds();
+		console.log(date);
+		
+	} else {
+		body.completed = false;
+		body.completedAt = null;
+	}
+
+	Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+
+		if (!todo) {
+			return res.status(404).send();
+		}
+
+		res.send({todo});
+	}).catch((err) => res.status(400).send());
+
+	console.log('id: ', id);
+	console.log('body: ', body.text);
+	console.log('completed: ', body.completed);
 })
 
 app.listen(port, () => {
