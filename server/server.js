@@ -88,7 +88,7 @@ app.patch('/todos/:id', (req, res) => {
 
 	if (_.isBoolean(body.completed) && body.completed) {
 		var timestamp = _.now();
-		var date = new Date(timestamp).toString();
+		var date = new Date(timestamp);
 		body.completedAt = date;
 		// var year = date.getFullYear();
 		// var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
