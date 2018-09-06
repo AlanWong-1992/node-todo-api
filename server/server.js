@@ -1,3 +1,4 @@
+require('./config/config');
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,7 +9,7 @@ var {Todo} = require('./models/todo');
 var {ObjectId} = require('mongodb');
 var app = express();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
@@ -90,14 +91,6 @@ app.patch('/todos/:id', (req, res) => {
 		var timestamp = _.now();
 		var date = new Date(timestamp);
 		body.completedAt = date;
-		// var year = date.getFullYear();
-		// var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-		// var month = months[date.getMonth()];
-		// var dayOfMonth = date.getDate();
-		// var hour = date.getHours();
-		// var min = date.getMinutes();
-		// var sec = date.getSeconds();
-		console.log(date);
 		
 	} else {
 		body.completed = false;
@@ -112,10 +105,6 @@ app.patch('/todos/:id', (req, res) => {
 
 		res.send({todo});
 	}).catch((err) => res.status(400).send());
-
-	console.log('id: ', id);
-	console.log('body: ', body.text);
-	console.log('completed: ', body.completed);
 })
 
 app.listen(port, () => {
