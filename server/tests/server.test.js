@@ -11,7 +11,9 @@ const todos =[{
 	text: 'First Test to Do'
 },{
 	_id: new ObjectId(),
-	text: 'Second Test to Do'
+	text: 'Second Test to Do',
+	completed: true,
+	completedAt: 333
 }];
 
 beforeEach((done) => {
@@ -157,5 +159,68 @@ describe('DELETE /todos/:id', () => {
 			.delete(link)
 			.expect(404)
 			.end(done)
-	})
+	});
+});
+
+describe('PATCH /todos/:id', () => {
+	it('Should update id setting completed to true and completedAt should be a number', (done) => {
+		var id = todos[0]._id.toHexString();
+		var link = `/todos/${id}`;
+		var body = {
+			"text": `${todos[0].text}`,
+			"completed": true
+		}
+
+		request(app)
+			.patch(link)
+			.send(body)
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.todo.text).toBe(todos[0].text);
+				expect(res.body.todo.completed).toBe(true);
+				expect(typeof res.body.todo.completedAt).toBe('number');
+			})
+			.end(done)
+	});
+
+	it('Should update id setting completed to false and completedAt should be null', (done) => {
+		var id = todos[1]._id.toHexString();
+		var link = `/todos/${id}`;
+		var body = {
+			"text": `${todos[1].text}`,
+			"completed": false
+		}
+
+		request(app)
+			.patch(link)
+			.send(body)
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.todo.text).toBe(todos[1].text);
+				expect(res.body.todo.completed).toBe(false);
+				expect(res.body.todo.completedAt).toBeNull();
+			})
+			.end(done)
+	});
+
+	it('Should return 404 if invalid id is provided', (done) => {
+
+		var id = '123abc'; // invalid id
+		var link = `/todos/${id}`;
+		request(app)
+			.patch(link)
+			.expect(404)
+			.end(done)
+	});
+
+	it('Should return 404 if text property in the body is not set', (done) => {
+		var id = todos[1]._id.toHexString();
+		var link = `/todos/${id}`;
+		var body = {};
+		request(app)
+			.patch(link)
+			.expect(404)
+			.end(done)
+	});
+
 })
