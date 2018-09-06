@@ -10,6 +10,7 @@ var {ObjectId} = require('mongodb');
 var app = express();
 
 const port = process.env.PORT;
+
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
@@ -31,7 +32,7 @@ app.get('/todos', (req, res) => {
 	}, (err) => {
 		res.status(400).send(err);
 	})
-})
+});
 
 app.get('/todos/:id', (req, res) => {
 	var id = req.params.id;
@@ -53,7 +54,7 @@ app.get('/todos/:id', (req, res) => {
 		return res.status(400).send();
 	})
 
-})
+});
 
 app.delete('/todos/:id', (req, res) => {
 	var id = req.params.id;
@@ -73,7 +74,7 @@ app.delete('/todos/:id', (req, res) => {
 		return res.status(400).send();
 	})
 
-})
+});
 
 app.patch('/todos/:id', (req, res) => {
 	var id = req.params.id;
@@ -105,6 +106,19 @@ app.patch('/todos/:id', (req, res) => {
 
 		res.send({todo});
 	}).catch((err) => res.status(400).send());
+});
+
+// POST
+app.post('/users', (req, res) => {
+	// console.log(req.body);
+	// console.log('Token Access:', req.body.tokens[0].access);
+	// console.log('Token Token:', req.body.tokens[0].token);
+	var body = _.pick(req.body, ['email', 'password']);
+	var user = new User(body);
+
+	user.save().then((doc) => {
+		res.send(doc);
+	}).catch((err) => res.status(400).send(err));
 })
 
 app.listen(port, () => {
