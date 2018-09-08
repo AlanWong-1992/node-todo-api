@@ -7,6 +7,8 @@ var {mongoose} = require('./db/mongoose');
 var {User} = require('./models/user');
 var {Todo} = require('./models/todo');
 var {ObjectId} = require('mongodb');
+var {authenticate} = require('./middleware/authenticate');
+
 var app = express();
 
 const port = process.env.PORT;
@@ -14,7 +16,6 @@ const port = process.env.PORT;
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
-	console.log(req.body);
 	var todo = new Todo({
 		text: req.body.text
 	});
@@ -119,7 +120,11 @@ app.post('/users', (req, res) => {
 	}).then((token) => {
 		res.header('x-auth', token).send(user);
 	}).catch((err) => res.status(400).send(err));
-})
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+	res.send(req.user);
+}); 
 
 app.listen(port, () => {
 	console.log(`Started on port ${port}`);
