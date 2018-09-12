@@ -283,3 +283,41 @@ describe('POST /users', () => {
       .end(done)
   });
 });
+
+describe('POSTS /users/login', () => {
+  it('Should return user with a token', (done) => {
+    var email = 'john@gmail.com';
+    var password = 'userOnePass';
+    request(app)
+      .post('/users/login')
+      .send({email, password})
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.email).toBe(email);
+        expect(res.headers['x-auth']).toBeTruthy();
+        expect(res.body._id).toBeTruthy();
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err)
+        }
+
+        User.findOne({email}).then((user) => {
+          expect(user).toBeTruthy();
+          expect(user.password).not.toBe(password);
+          expect(user.tokens[0].token).toMatch(res.headers['x-auth']);
+          done();
+        }).catch((e) => console.log(e));
+      });
+  });
+
+  it('Should return 400 if the wrong email and/or password is supplied', (done) => {
+    var email = 'email123@email.com';
+    var password = 'wrongPassword';
+    request(app)
+      .post('/users/login')
+      .send({email, password})
+      .expect(400)
+      .end(done)
+    });
+});

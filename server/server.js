@@ -116,7 +116,6 @@ app.post('/users', (req, res) => {
 	var user = new User(body);
 
 	user.save().then(() => {
-
 		return user.generateAuthToken();
 	}).then((token) => {
 		res.header('x-auth', token).send(user);
@@ -135,7 +134,7 @@ app.post('/users/login', authenticateLogin, (req, res) => {
 	// User.findByCredentials(body.email, body.password).then((user) => {
 	// 	return user.generateAuthToken();
 	// }).then((token) => {
-		res.header('x-auth', req.token).send(req.user);
+	res.header('x-auth', req.token).send(req.user);
 	// }).catch((e) => {
 	// 	res.status(400).send();
 	// });
@@ -160,6 +159,10 @@ app.post('/users/login', authenticateLogin, (req, res) => {
 	// }).catch((e) => res.send(e));
 	
 });
+
+app.post('/users/logout', (req, res) => {
+	var body = _.pick(['tokens']);
+})
 
 app.listen(port, () => {
 	console.log(`Started on port ${port}`);

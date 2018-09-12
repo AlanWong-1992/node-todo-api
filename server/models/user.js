@@ -2,7 +2,20 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+
+var UserSubSchema = new mongoose.Schema({
+		access: {
+			type: String,
+			required: true
+		},
+		token: {
+			type: String, 
+			required: true
+		},
+		_id: false
+});
+
 var UserSchema = new mongoose.Schema({ 
 	email: {
 		type: String,
@@ -20,16 +33,7 @@ var UserSchema = new mongoose.Schema({
 		required: true,
 		minlength: 6
 	},
-	tokens: [{
-		access: {
-			type: String,
-			required: true
-		},
-		token: {
-			type: String,
-			required: true
-		}
-	}]
+	tokens: [UserSubSchema]
 });
 
 UserSchema.methods.toJSON = function () {
@@ -44,7 +48,13 @@ UserSchema.methods.generateAuthToken = function () {
 	var access = 'auth';
 	var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
 
-	user.tokens = user.tokens.concat([{access, token}]);
+	// user.tokens = user.tokens.concat([{access, token}]);
+	if (user.tokens === undefined) {
+		user.tokens = user.tokens.concat([{access, token}]);
+	} else {
+		delete user.tokens[0];
+		user.tokens = user.tokens.concat([{access, token}]);
+	}
 
 	return user.save().then(() => {
 		return token;
