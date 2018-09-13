@@ -216,7 +216,6 @@ describe('GET /users/me', () => {
     
     request(app)
       .get('/users/me')
-      .set('Content-Type', 'application/json')
       .set('x-auth', token)
       .expect(200)
       .expect((res) => {
@@ -320,4 +319,24 @@ describe('POSTS /users/login', () => {
       .expect(400)
       .end(done)
     });
+});
+
+describe('DEL /users/me/token', () => {
+  it('Should delete the token from the user', (done) => {
+    var token = users[0].tokens[0].token;
+    request(app)
+      .delete('/users/me/token')
+      .set('x-auth', token)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          return done(err)
+        }
+
+        User.findById(users[0]._id).then((user) => {
+          expect(user.tokens.length).toBe(0);
+          done()
+        }).catch((e) => console.log(e));
+      });
+  });
 });

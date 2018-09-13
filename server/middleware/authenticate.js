@@ -30,15 +30,6 @@ var authenticateLogin = (req, res, next) => {
 	}).catch((e) => {
 		res.status(400).send();
 	});
-
-	// User.findOne({email: body.email}).then((user) => {
-	// 	bcrypt.compare(body.password, user.password, (err, result) => {
-	// 		console.log('Password equals: ', result);
-	// 		req.user = user.email;
-	// 		req.token = user.tokens[0].token;
-	// 		next();
-	// 	});
-	// }).catch((e) => res.status(401).send(e));
 };
 
 module.exports = {authenticate, authenticateLogin};
