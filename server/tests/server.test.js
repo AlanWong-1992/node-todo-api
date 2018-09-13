@@ -15,6 +15,7 @@ describe('POST /todos', () => {
     var text = 'Clean House';
     request(app)
       .post('/todos')
+      .set('x-auth', users[0].tokens[0].token)
       .send({text})
       .expect(200)
       .expect((res) => {
@@ -33,22 +34,13 @@ describe('POST /todos', () => {
       });
   });
 
-  it('Should not create Todo with invalid body data', (done) => {
+  it('Should not create Todo', (done) => {
     request(app)
       .post('/todos')
+      .set('x-auth', users[0].tokens[0].token)
       .send({})
       .expect(400)
-      .end((err, res) => {
-        if(err){
-          return done(err);
-        }
-
-        Todo.find().then((todos) => {
-          expect(todos.length).toBe(2);
-          done();
-        }).catch((err) => done(err));
-
-      });
+      .end(done);
   });
 });
 
@@ -56,11 +48,11 @@ describe('GET /todos', () => {
   it('Should get all todos', (done) => {
     request(app)
       .get('/todos')
+      .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res) => {
-        expect(res.body.todos.length).toBe(2);
+        expect(res.body.todos.length).toBe(1);
         expect(res.body.todos[0].text).toBe(todos[0].text);
-        expect(res.body.todos[1].text).toBe(todos[1].text);
       })
       .end(done);
   })
@@ -74,6 +66,7 @@ describe('GET /todos/:id', () => {
     var link = `/todos/${id}`;
     request(app)
       .get(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res) => {
         expect(typeof res.body.todo.text).toBe('string');
@@ -88,6 +81,7 @@ describe('GET /todos/:id', () => {
     var link = `/todos/${id}`;
     request(app)
       .get(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(404)
       .end(done)
   });
@@ -98,6 +92,7 @@ describe('GET /todos/:id', () => {
     var link = `/todos/${id}`;
     request(app)
       .get(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(404)
       .end(done)
   })
@@ -110,6 +105,7 @@ describe('DELETE /todos/:id', () => {
     var link = `/todos/${id}`;
     request(app)
       .delete(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res)=>{
         expect(res.body.todo._id).toBe(id)
@@ -132,6 +128,7 @@ describe('DELETE /todos/:id', () => {
     var link = `/todos/${id}`;
     request(app)
       .delete(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(404)
       .end(done)
   });
@@ -142,6 +139,7 @@ describe('DELETE /todos/:id', () => {
     var link = `/todos/${id}`;
     request(app)
       .delete(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(404)
       .end(done)
   });
@@ -158,6 +156,7 @@ describe('PATCH /todos/:id', () => {
 
     request(app)
       .patch(link)
+      .set('x-auth', users[0].tokens[0].token)
       .send(body)
       .expect(200)
       .expect((res) => {
@@ -178,6 +177,7 @@ describe('PATCH /todos/:id', () => {
 
     request(app)
       .patch(link)
+      .set('x-auth', users[1].tokens[0].token)
       .send(body)
       .expect(200)
       .expect((res) => {
@@ -194,6 +194,7 @@ describe('PATCH /todos/:id', () => {
     var link = `/todos/${id}`;
     request(app)
       .patch(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(404)
       .end(done)
   });
@@ -204,6 +205,7 @@ describe('PATCH /todos/:id', () => {
     var body = {};
     request(app)
       .patch(link)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(404)
       .end(done)
   });
@@ -212,11 +214,10 @@ describe('PATCH /todos/:id', () => {
 
 describe('GET /users/me', () => {
   it('Should bring up a new user if authenticated', (done) => {
-    var token = users[0].tokens[0].token;
     
     request(app)
       .get('/users/me')
-      .set('x-auth', token)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res) => {
         expect(res.body._id).toBe(users[0]._id.toHexString());
@@ -323,10 +324,9 @@ describe('POSTS /users/login', () => {
 
 describe('DEL /users/me/token', () => {
   it('Should delete the token from the user', (done) => {
-    var token = users[0].tokens[0].token;
     request(app)
       .delete('/users/me/token')
-      .set('x-auth', token)
+      .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .end((err, res) => {
         if (err) {
