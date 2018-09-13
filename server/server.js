@@ -128,40 +128,15 @@ app.get('/users/me', authenticate, (req, res) => {
 });
 
 app.post('/users/login', authenticateLogin, (req, res) => {
-
-	// var body = _.pick(req.body, ['email', 'password']);
-
-	// User.findByCredentials(body.email, body.password).then((user) => {
-	// 	return user.generateAuthToken();
-	// }).then((token) => {
 	res.header('x-auth', req.token).send(req.user);
-	// }).catch((e) => {
-	// 	res.status(400).send();
-	// });
-	// res.send({
-	// 	user: req.user,
-	// 	token: req.token	
-	// });
-	// console.log(user);
-
-	// console.log(`user is: ${user}`);
-	// console.log(user.password);
-
-
-	// var body = _.pick(req.body, ['email', 'password']);
-
-	// User.findOne({email: body.email}).then((doc) => {
-
-	// 	bcrypt.compare(body.password, doc.password, (err, result) => {
-	// 		console.log(result);
-	// 	});
-
-	// }).catch((e) => res.send(e));
-	
 });
 
-app.post('/users/logout', (req, res) => {
-	var body = _.pick(['tokens']);
+app.delete('/users/me/token', authenticate, (req, res) => {
+	req.user.removeToken(req.token).then(() => {
+		res.status(200).send();
+	}, () => {
+		res.status(400).send();
+	});
 })
 
 app.listen(port, () => {
