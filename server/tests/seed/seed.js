@@ -25,9 +25,7 @@ const users = [{
 
 }];
 
-
 const populateUsers = (done) => {
-	
 	User.remove({}).then(() => {
 		return userOne = new User(users[0]).save();
 	}).then(() => {
@@ -35,7 +33,7 @@ const populateUsers = (done) => {
 	}).then((done) => {
 		done();
 	}).catch((e) => { done();});
-}; 
+};
 
 const todos =[{
 	_id: new ObjectId(),
@@ -50,14 +48,10 @@ const todos =[{
 }];
 
 const populateTodos = (done) => {
-	
 	Todo.remove({}).then(() => {
-		
 		return Todo.insertMany(todos);
 	}).then(() => done());
 
 }
 
-
 module.exports = {todos, populateTodos, users, populateUsers};
-

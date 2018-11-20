@@ -214,7 +214,7 @@ describe('PATCH /todos/:id', () => {
 
 describe('GET /users/me', () => {
   it('Should bring up a new user if authenticated', (done) => {
-    
+
     request(app)
       .get('/users/me')
       .set('x-auth', users[0].tokens[0].token)
@@ -232,7 +232,7 @@ describe('GET /users/me', () => {
       .expect((res) => {
         expect(res.body).toEqual({});
       })
-      .end(done) 
+      .end(done)
   });
 })
 
